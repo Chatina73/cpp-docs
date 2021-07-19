@@ -146,22 +146,62 @@
           href: ../standard-library/chrono-functions.md
         - name: <chrono> operators
           href: ../standard-library/chrono-operators.md
-        - name: chrono literals
+        - name: <chrono> literals
           href: ../standard-library/chrono-literals.md
         - name: common_type struct
           href: ../standard-library/common-type-structure.md
+        - name: day class
+          href: day-class.md
         - name: duration class
           href: ../standard-library/duration-class.md
         - name: duration_values struct
           href: ../standard-library/duration-values-structure.md
+        - name: hh_mm_ss class
+          href: ../standard-library/hhmmss-class.md
+        - name: high_resolution_clock struct 
+          href: high-resolution-clock-struct.md
+        - name: leap_second class
+          href: ../standard-library/leap-second-class.md
+        - name: leap_second_info struct
+          href: ../standard-library/leap-second-info-struct.md
+        - name: month class
+          href: ../standard-library/month-class.md
+        - name: month_day class
+          href: ../standard-library/month-day-class.md
+        - name: month_day_last class
+          href: ../standard-library/month-day-last-class.md
+        - name: month_weekday class
+          href: ../standard-library/month-weekday-class.md
+        - name: month_weekday_last class
+          href: ../standard-library/month-weekday-last-class.md
         - name: steady_clock struct
           href: ../standard-library/steady-clock-struct.md
         - name: system_clock struct
           href: ../standard-library/system-clock-structure.md
         - name: time_point class
           href: ../standard-library/time-point-class.md
+        - name: time_zone class
+          href: ../standard-library/time-zone-class.md
         - name: treat_as_floating_point struct
           href: ../standard-library/treat-as-floating-point-structure.md
+        - name: weekday class
+          href: weekday-class.md
+        - name: weekday_indexed
+          href: weekdayindexed-class.md
+        - name: weekday_last class
+          href: weekdaylast-class.md
+        - name: year class
+          href: year-class.md
+        - name: year_month class
+          href: year-month-class.md
+        - name: year_month_day class
+          href: year-month-day-class.md
+        - name: year_month_day_last class
+          href: year-month-day-last-class.md
+        - name: year_month_weekday class
+          href: year-month-weekday-class.md
+        - name: year_month_weekday_last class
+          href: year-month-weekday-last-class.md
     - name: <cinttypes>
       href: ../standard-library/cinttypes.md
     - name: <ciso646>
@@ -844,6 +884,11 @@
           href: ../standard-library/uniform-real-distribution-class.md
         - name: weibull_distribution class
           href: ../standard-library/weibull-distribution-class.md
+    - name: <ranges>
+      expanded: false
+      items: 
+        - name: <ranges>
+          href: ../standard-library/ranges.md
     - name: <ratio>
       href: ../standard-library/ratio.md
     - name: <regex>

@@ -22,7 +22,7 @@ The compiler supports about 75% of the features that are new in C++17, including
 
 ##### Visual Studio 2017 version 15.7
 
-The MSVC compiler toolset in Visual Studio version 15.7 now conforms with the C++ Standard. For more information, see [Announcing: MSVC Conforms to the C++ Standard](https://devblogs.microsoft.com/cppblog/announcing-msvc-conforms-to-the-c-standard/) and [Microsoft C++ Language Conformance](./visual-cpp-language-conformance.md).
+The MSVC compiler toolset in Visual Studio version 15.7 now conforms with the C++ Standard. For more information, see [Announcing: MSVC Conforms to the C++ Standard](https://devblogs.microsoft.com/cppblog/announcing-msvc-conforms-to-the-c-standard/) and [Microsoft C/C++ language conformance](./visual-cpp-language-conformance.md).
 
 ##### Visual Studio 2017 version 15.8
 
@@ -131,7 +131,7 @@ There are more standard library improvements in Visual Studio 2017 RTM. For a co
 - Added \<optional\>, \<variant\>, `shared_ptr::weak_type`, and \<cstdalign\>.
 - Enabled C++14 **`constexpr`** in `min(initializer_list)`, `max(initializer_list)`, and `minmax(initializer_list)`, and `min_element()`, `max_element()`, and `minmax_element()`.
 
-For more information, see [Microsoft C++ language conformance table](./visual-cpp-language-conformance.md).
+For more information, see [Microsoft C/C++ language conformance](./visual-cpp-language-conformance.md).
 
 ##### Visual Studio 2017 version 15.3
 
@@ -193,7 +193,7 @@ For more information, see [Microsoft C++ language conformance table](./visual-cp
 - `constexpr char_traits`
 - Deduction guides for the standard library
 
-For more information, see [Microsoft C++ language conformance table](./visual-cpp-language-conformance.md).
+For more information, see [Microsoft C/C++ language conformance](./visual-cpp-language-conformance.md).
 
 ### Performance and throughput fixes
 
@@ -246,7 +246,7 @@ For more information, see [Microsoft C++ language conformance table](./visual-cp
 
 ### Open-source library support
 
-**Vcpkg** is an open-source command-line tool that greatly simplifies the process of acquiring and building open-source C++ static libs and DLLS in Visual Studio. For more information, see [vcpkg: A package manager for C++](../build/vcpkg.md).
+**Vcpkg** is an open-source command-line tool that greatly simplifies the process of acquiring and building open-source C++ static libs and DLLS in Visual Studio. For more information, see [vcpkg](https://vcpkg.io/).
 
 ### CPPRest SDK 2.9.0
 

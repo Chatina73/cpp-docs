@@ -1,7 +1,7 @@
 ---
 title: "C++ conformance improvements in Visual Studio 2019"
 description: "Microsoft C++ in Visual Studio is progressing toward full conformance with the C++20 language standard."
-ms.date: 03/10/2021
+ms.date: 06/11/2021
 ms.technology: "cpp-language"
 ---
 # C++ Conformance improvements, behavior changes, and bug fixes in Visual Studio 2019
@@ -173,7 +173,7 @@ To avoid the error, remove the **`constexpr`** modifier from the function declar
 In Visual Studio 2019, the `basic_string` range constructor no longer suppresses compiler diagnostics with **`static_cast`**. The following code compiles without warnings in Visual Studio 2017, despite the possible loss of data from **`wchar_t`** to **`char`** when initializing `out`:
 
 ```cpp
-std::wstring ws = /* … */;
+std::wstring ws = /* . . . */;
 std::string out(ws.begin(), ws.end()); // VS2019 C4244: 'argument': conversion from 'wchar_t' to 'const _Elem', possible loss of data.
 ```
 
@@ -232,7 +232,7 @@ struct X
 
 ### C4800 reinstated
 
-MSVC used to have a performance warning C4800 about implicit conversion to **`bool`**. It was too noisy and couldn't be suppressed, leading us to remove it in Visual Studio 2017. However, over the lifecycle of Visual Studio 2017 we got lots of feedback on the useful cases it was solving. We bring back in Visual Studio 2019 a carefully tailored C4800, along with the explanatory C4165. Both of these warnings are easy to suppress: either by using an explicit cast, or by comparison to 0 of the appropriate type. C4800 is an off-by-default level 4 warning, and C4165 is an off-by-default level 3 warning. Both are discoverable by using the **`/Wall`** compiler option.
+MSVC used to have a performance warning C4800 about implicit conversion to **`bool`**. It was too noisy and couldn't be suppressed, leading us to remove it in Visual Studio 2017. However, over the lifecycle of Visual Studio 2017 we got lots of feedback on the useful cases it was solving. We bring back in Visual Studio 2019 a carefully tailored C4800, along with the explanatory C4165. Both of these warnings are easy to suppress: either by using an explicit cast, or by comparison to 0 of the appropriate type. C4800 is an [off-by-default](../preprocessor/compiler-warnings-that-are-off-by-default.md) level 4 warning, and C4165 is an off-by-default level 3 warning. Both are discoverable by using the **`/Wall`** compiler option.
 
 The following example raises C4800 and C4165 under **`/Wall`**:
 
@@ -260,7 +260,7 @@ bool test(IUnknown* p)
 
 ### Local class member function doesn't have a body
 
-In Visual Studio 2017, warning C4822 is raised only when compiler option **`/w14822`** is explicitly set. It isn't shown with **`/Wall`**. In Visual Studio 2019, C4822 is an off-by-default warning, which makes it discoverable under **`/Wall`** without having to set **`/w14822`** explicitly.
+In Visual Studio 2017, warning C4822 is raised only when compiler option **`/w14822`** is explicitly set. It isn't shown with **`/Wall`**. In Visual Studio 2019, C4822 is an [off-by-default](../preprocessor/compiler-warnings-that-are-off-by-default.md) warning, which makes it discoverable under **`/Wall`** without having to set **`/w14822`** explicitly.
 
 ```cpp
 void example()
@@ -274,16 +274,21 @@ void example()
 
 ### Function template bodies containing `if constexpr` statements
 
-Template function bodies containing **`if constexpr`** statements have some [`/permissive-`](../build/reference/permissive-standards-conformance.md) parsing-related checks enabled. For example, in Visual Studio 2017 the following code produces C7510 only if the **`/permissive-`** option isn't set. In Visual Studio 2019 the same code raises errors even when the **`/permissive-`** option is set:
+In Visual Studio 2019 under **`/std:c++latest`**, template function bodies that have **`if constexpr`** statements have extra parsing-related checks enabled. For example, in Visual Studio 2017 the following code produces [C7510](../error-messages/compiler-errors-2/compiler-error-c7510.md) only if the **`/permissive-`** option is set. In Visual Studio 2019 the same code raises errors even when the **`/permissive`** option is set:
 
 ```cpp
-template <typename T>
+// C7510.cpp
+// compile using: cl /EHsc /W4 /permissive /std:c++latest C7510.cpp
+#include <iostream>
 
+template <typename T>
 int f()
 {
     T::Type a; // error C7510: 'Type': use of dependent type name must be prefixed with 'typename'
+    // To fix the error, add the 'typename' keyword. Use this declaration instead:
+    // typename T::Type a;
 
-    if constexpr (T::val)
+    if constexpr (a.val)
     {
         return 1;
     }
@@ -301,7 +306,7 @@ struct X
 
 int main()
 {
-    return f<X>();
+    std::cout << f<X>() << "\n";
 }
 ```
 
@@ -1183,7 +1188,7 @@ void f() {
 
 Previously, thread-local variables in DLLs weren't correctly initialized. Other than on the thread that loaded the DLL, they weren't initialized before first use on threads that existed before the DLL was loaded. This defect has now been corrected. Thread-local variables in such a DLL get initialized immediately before their first use on such threads.
 
-This new behavior of testing for initialization on uses of thread-local variables may be disabled by using the **`/Zc:tlsGuards-`** compiler switch. Or, by adding the `[[msvc:no_tls_guard]]` attribute to particular thread local variables.
+This new behavior of testing for initialization on uses of thread-local variables may be disabled by using the **`/Zc:tlsGuards-`** compiler option. Or, by adding the `[[msvc:no_tls_guard]]` attribute to particular thread local variables.
 
 ### Better diagnosis of call to deleted functions
 
@@ -1314,11 +1319,11 @@ There are many possible fixes:
 
 - In some cases, you can avoid `pow` entirely. For example, `pow(cf, -1)` can be replaced by division.
 
-### Switch-related warnings for C
+### `switch` warnings for C
 
 Starting in Visual Studio 2019 version 16.6, the compiler implements some preexisting C++ warnings for code compiled as C. The following warnings are now enabled at different levels: C4060, C4061, C4062, C4063, C4064, C4065, C4808, and C4809. Warnings C4065 and C4060 are disabled by default in C.
 
-The warnings trigger on missing **`case`** statements, undefined **`enum`**, and bad **`bool`** switches (that is, ones that contain too many cases). For example:
+The warnings trigger on missing **`case`** statements, undefined **`enum`**, and bad **`bool`** switch statements (that is, ones that contain too many cases). For example:
 
 ```c
 #include <stdbool.h>
@@ -1352,10 +1357,9 @@ int main() {
 
 Starting in Visual Studio 2019 version 16.6, the behavior of **`typedef`** declarations has been restricted to conform to [P1766R1](https://wg21.link/P1766R1). With this update, unnamed classes within a **`typedef`** declaration can't have any members other than:
 
-- non-static data members,
-- member classes,
-- member enumerations,
-- and default member initializers.
+- non-static data members with no default member initializers,
+- member classes, or
+- member enumerations.
 
 The same restrictions are applied recursively to each nested class. The restriction is meant to ensure the simplicity of structs that have **`typedef`** names for linkage purposes. They must be simple enough that no linkage calculations are necessary before the compiler gets to the **`typedef`** name for linkage.
 
@@ -1427,7 +1431,7 @@ struct S
 static_assert(std::is_trivially_copyable_v<S>, "Meow!");
 ```
 
-This code doesn't compile in versions of MSVC before Visual Studio 2019 version 16.7. There's an off-by-default compiler warning that you can use to detect this change. If you compile the code above by using **`cl /W4 /w45220`**, you'll see the following warning:
+This code doesn't compile in versions of MSVC before Visual Studio 2019 version 16.7. There's an [off-by-default](../preprocessor/compiler-warnings-that-are-off-by-default.md) compiler warning that you can use to detect this change. If you compile the code above by using **`cl /W4 /w45220`**, you'll see the following warning:
 
 ```Output
 warning C5220: `'S::m': a non-static data member with a volatile qualified type no longer implies that compiler generated copy/move constructors and copy/move assignment operators are non trivial`
@@ -1562,7 +1566,7 @@ int main()
 This program previously incorrectly compiled and linked, but will now emit error C7631.
 
 ```Output
-error C7631: '`anonymous-namespace'::x': variable with internal linkage declared but not defined
+error C7631: 'anonymous-namespace::x': variable with internal linkage declared but not defined
 ```
 
 Such variables must be defined in the same translation unit they're used in. For example, you can provide an explicit initializer or a separate definition.
@@ -1784,7 +1788,7 @@ Given that in many cases using `::f` as the function argument is what the user e
 
 ### Migrating from `/await` to C++20 coroutines
 
-Standard C++20 coroutines are now on by default under **`/std:c++latest`**. They differ from the Coroutines TS and the support under the **`/await`** switch. Migrating from **`/await`** to standard coroutines may require some source changes.
+Standard C++20 coroutines are now on by default under **`/std:c++latest`**. They differ from the Coroutines TS and the support under the **`/await`** option. Migrating from **`/await`** to standard coroutines may require some source changes.
 
 #### Non-standard keywords
 
@@ -1819,7 +1823,7 @@ struct promise_type_legacy {
 
 // /std:c++latest
 struct promise_type {
-    auto initial_susepend() noexcept { return std::suspend_never{}; }
+    auto initial_suspend() noexcept { return std::suspend_never{}; }
     auto final_suspend() noexcept { return std::suspend_always{}; }
     ...
 };
@@ -1938,7 +1942,7 @@ C++20 Modules support is on by default under **`/std:c++latest`**. For more info
 
 As a prerequisite for Modules support, **`permissive-`** is now enabled when **`/std:c++latest`** is specified. For more information, see [`/permissive-`](../build/reference/permissive-standards-conformance.md).
 
-For code that previously compiled under **`/std:c++latest`** and requires non-conforming compiler behaviors, **`permissive`** may be specified to turn off strict conformance mode in the compiler. The compiler option must appear after **`/std:c++latest`** in the command-line argument list. However, **`permissive`** results in an error if Modules usage is detected:
+For code that previously compiled under **`/std:c++latest`** and requires non-conforming compiler behaviors, **`/permissive`** may be specified to turn off strict conformance mode in the compiler. The compiler option must appear after **`/std:c++latest`** in the command-line argument list. However, **`/permissive`** results in an error if Modules usage is detected:
 
 > error C1214: Modules conflict with non-standard behavior requested via '*option*'
 
@@ -1946,8 +1950,8 @@ The most common values for *option* are:
 
 | Option | Description |
 |--|--|
-| **`/Zc:twoPhase-`** | Two-phase name lookup is required for C++20 Modules and implied by **`permissive-`**. |
-| **`/Zc:hiddenFriend-`** | Standard hidden friend name lookup rules are required for C++20 Modules and implied by **`permissive-`**. |
+| **`/Zc:twoPhase-`** | Two-phase name lookup is required for C++20 Modules and implied by **`/permissive-`**. |
+| **`/Zc:hiddenFriend-`** | Standard hidden friend name lookup rules are required for C++20 Modules and implied by **`/permissive-`**. |
 | **`/Zc:preprocessor-`** | The conforming preprocessor is required for C++20 header unit usage and creation only. Named Modules don't require this option. |
 
 The [`/experimental:module`](../build/reference/experimental-module.md) option is still required to use the *`std.*`* Modules that ship with Visual Studio, because they're not standardized yet.
@@ -2055,15 +2059,15 @@ int func() {
 }
 ```
 
-### `/Zc:twoPhase` and `/Zc:twoPhase-` switch behavior change
+### `/Zc:twoPhase` and `/Zc:twoPhase-` option behavior change
 
-Normally, the MSVC compiler switches work on the principle that the last one wins. Unfortunately, it wasn't the case with the **`/Zc:twoPhase`** and **`/Zc:twoPhase-`** switches. These switches were "sticky," so later switches couldn't override them. For example:
+Normally, the MSVC compiler options work on the principle that the last one seen wins. Unfortunately, it wasn't the case with the **`/Zc:twoPhase`** and **`/Zc:twoPhase-`** options. These options were "sticky," so later options couldn't override them. For example:
 
 `cl /Zc:twoPhase /permissive a.cpp`
 
-In this case, the first **`/Zc:twoPhase`** switch enables strict two-phase name lookup. The second switch is meant to disable the strict conformance mode (it's the opposite of **`/permissive-`**), but it didn't disable **`/Zc:twoPhase`**.
+In this case, the first **`/Zc:twoPhase`** option enables strict two-phase name lookup. The second option is meant to disable the strict conformance mode (it's the opposite of **`/permissive-`**), but it didn't disable **`/Zc:twoPhase`**.
 
-Visual Studio 2019 version 16.9 changes this behavior in all **`/std`** compiler modes. **`/Zc:twoPhase`** and **`/Zc:twoPhase-`** are no longer "sticky," and later switches can override them.
+Visual Studio 2019 version 16.9 changes this behavior in all **`/std`** compiler modes. **`/Zc:twoPhase`** and **`/Zc:twoPhase-`** are no longer "sticky," and later options can override them.
 
 ### Explicit noexcept-specifiers on destructor templates
 
@@ -2165,6 +2169,298 @@ struct iterator {
 };
 ```
 
+## <a name="improvements_16a"></a> Conformance improvements in Visual Studio 2019 version 16.10
+
+### Wrong overload chosen for copy initialization of class
+
+Given this sample code:
+
+```cpp
+struct A { template <typename T> A(T&&); };
+struct B { operator A(); };
+struct C : public B{};
+void f(A);
+f(C{});
+```
+
+Earlier versions of the compiler would incorrectly convert the argument of `f` from type `C` to an `A` by using the templated converting constructor of `A`. Standard C++ requires use of the conversion operator `B::operator A` instead. Starting in Visual Studio 2019 version 16.10, the overload resolution behavior is changed to use the correct overload.
+
+This change can also correct the chosen overload in some other situations:
+
+```cpp
+struct Base 
+{
+    operator char *();
+};
+
+struct Derived : public Base
+{
+    operator bool() const;
+};
+
+void f(Derived &d)
+{
+    // Implicit conversion to bool previously used Derived::operator bool(), now uses Base::operator char*.
+    // The Base function is preferred because operator bool() is declared 'const' and requires a qualification
+    // adjustment for the implicit object parameter, while the Base function does not.
+    if (d)
+    {
+        // ...
+    }
+}
+```
+
+### Incorrect parsing of floating-point literals
+
+Starting in Visual Studio 2019 version 16.10, floating-point literals are parsed based on their actual type. Earlier versions of the compiler always parsed a floating-point literal as if it had type **`double`** and then converted the result to the actual type. This behavior could lead to incorrect rounding and rejection of valid values:
+
+```cpp
+// The binary representation is '0x15AE43FE' in VS2019 16.9
+// The binary representation is '0x15AE43FD' in VS2019 16.10
+// You can use 'static_cast<float>(7.038531E-26)' if you want the old behavior.
+float f = 7.038531E-26f;
+```
+
+### Incorrect point of declaration
+
+Earlier versions of the compiler couldn't compile self-referential code like this example:
+
+```cpp
+struct S {
+    S(int, const S*);
+
+    int value() const;
+};
+
+S s(4, &s);
+```
+
+The compiler wouldn't declare the variable `s` until it parsed the whole declaration, including the constructor arguments. The lookup of the `s` in the constructor argument list would fail. Starting in Visual Studio 2019 version 16.10, this example now compiles correctly.
+
+Unfortunately, this change can break existing code, as in this example:
+
+```cpp
+S s(1, nullptr); // outer s
+// ...
+{
+   S s(s.value(), nullptr); // inner s
+}
+```
+
+In earlier versions of the compiler, when it looks up `s` in the constructor arguments for the "inner" declaration of `s`, it finds the previous declaration ("outer" `s`) and the code compiles. Starting in version 16.10, the compiler emits warning [C4700](../error-messages/compiler-warnings/compiler-warning-level-1-and-level-4-c4700.md) instead. That's because the compiler now declares the "inner" `s` before parsing the constructor arguments. So, the `s` lookup finds the "inner" `s`, which hasn't been initialized yet.
+
+### Explicitly specialized member of a class template
+
+Earlier versions of the compiler incorrectly marked an explicit specialization of a class template member as `inline` if it was also defined in the primary template. This behavior meant the compiler would sometimes reject conforming code. Starting in Visual Studio 2019 version 16.10, an explicit specialization is no longer implicitly marked as `inline` in **`/permissive-`** mode. Consider this example:
+
+```cpp
+// s.h
+template<typename T>
+struct S {
+    int f() { return 1; }
+};
+template<> int S<int>::f() { return 2; }
+```
+
+```cpp
+// s.cpp
+#include "s.h"
+```
+
+```cpp
+// main.cpp
+#include "s.h"
+
+int main()
+{
+}
+```
+
+To address the linker error in the above example, add `inline` explicitly to `S<int>::f`:
+
+```cpp
+template<> inline int S<int>::f() { return 2; }
+```
+
+### Deduced return type name mangling
+
+Starting in Visual Studio 2019 version 16.10, the compiler changed how it generates mangled names for functions that have deduced return types. For example, consider these functions:
+
+```cpp
+auto f() { return 0; }
+auto g() { []{}; return 0; }
+```
+
+Earlier versions of the compiler would generate these names for the linker:
+
+```Console
+f: ?f@@YAHXZ -> int __cdecl f(void)
+g: ?g@@YA@XZ -> __cdecl g(void)
+```
+
+Surprisingly, the return type would be omitted from `g` because of other semantic behavior caused by the local lambda in the function body. This inconsistency made it difficult to implement exported functions that have a deduced return type: The module interface requires information about how the body of a function was compiled. It needs the information to produce a function on the import side that can properly link to the definition.
+
+The compiler now omits the return type of a deduced return type function. This behavior is consistent with other major implementations. There's an exception for function templates: this version of the compiler introduces a new mangled-name behavior for function templates that have a deduced return type:
+
+```cpp
+template <typename T>
+auto f(T) { return 1; }
+
+template <typename T>
+decltype(auto) g(T) { return 1.; }
+
+int (*fp1)(int) = &f;
+double (*fp2)(int) = &g;
+```
+
+The mangled names for `auto` and `decltype(auto)` now appear in the binary, not the deduced return type:
+
+```Console
+f: ??$f@H@@YA?A_PH@Z -> auto __cdecl f<int>(int)
+g: ??$g@H@@YA?A_TH@Z -> decltype(auto) __cdecl g<int>(int)
+```
+
+Earlier versions of the compiler would include the deduced return type as part of the signature. When the compiler included the return type in the mangled name, it could cause linker issues. Some otherwise well-formed scenarios would become ambiguous to the linker.
+
+The new compiler behavior can produce a binary breaking change. Consider this example:
+
+```cpp
+// a.cpp
+auto f() { return 1; }
+```
+
+```cpp
+// main.cpp
+int f();
+int main() { f(); }
+```
+
+In versions before version 16.10, the compiler produced a name for `auto f()` that looked like `int f()`, even though they're semantically distinct functions. That means the example would compile. To fix the issue, don't rely on `auto` in the original definition of `f`. Instead, write it as `int f()`. Because functions that have deduced return types are always compiled, the ABI implications are minimized.
+
+### Warning for ignored `nodiscard` attribute
+
+Previous versions of the compiler would silently ignore certain uses of a `nodiscard` attribute. They ignored the attribute if it was in a syntactic position that didn't apply to the function or class being declared. For example:
+
+```cpp
+static [[nodiscard]] int f() { return 1; }
+```
+
+Starting in Visual Studio 2019 version 16.10, the compiler emits level 4 warning C5240 instead:
+
+```Console
+a.cpp(1): warning C5240: 'nodiscard': attribute is ignored in this syntactic position
+```
+
+To fix this issue, move the attribute to the correct syntactic position:
+
+```cpp
+[[nodiscard]] static int f() { return 1; }
+```
+
+### Warning for `include` directives with system header-names in module purview
+
+Starting in Visual Studio 2019 version 16.10, the compiler emits a warning to prevent a common module interface authoring mistake. If you include a standard library header after an `export module` statement, the compiler emits warning C5244. Here's an example:
+
+```cpp
+export module m;
+#include <vector>
+
+export
+void f(std::vector<int>);
+```
+
+The developer probably didn't intend module `m` to own the contents of `<vector>`. The compiler now emits a warning to help find and fix the issue:
+
+```Console
+m.ixx(2): warning C5244: '#include <vector>' in the purview of module 'm' appears erroneous. Consider moving that directive before the module declaration, or replace the textual inclusion with an "import <vector>;".
+m.ixx(1): note: see module 'm' declaration
+```
+
+To fix this issue, move `#include <vector>` before `export module m;`:
+
+```cpp
+#include <vector>
+export module m;
+
+export
+void f(std::vector<int>);
+```
+
+### Warning for unused internal linkage functions
+
+Starting in Visual Studio 2019 version 16.10, the compiler warns in more situations where an unreferenced function with internal linkage has been removed. Earlier versions of the compiler would emit warning [C4505](../error-messages/compiler-warnings/compiler-warning-level-4-c4505.md) for the following code:
+
+```cpp
+static void f() // warning C4505: 'f': unreferenced function with internal linkage has been removed
+{
+}
+```
+
+The compiler now also warns about unreferenced `auto` functions and unreferenced functions in anonymous namespaces. It emits an [off-by-default](../preprocessor/compiler-warnings-that-are-off-by-default.md) warning C5245 for both of the following functions:
+
+```cpp
+namespace
+{
+    void f1() // warning C5245: '`anonymous-namespace'::f1': unreferenced function with internal linkage has been removed
+    {
+    }
+}
+
+auto f2() // warning C5245: 'f2': unreferenced function with internal linkage has been removed
+{
+    return []{ return 13; };
+}
+```
+
+### Warning on brace elision
+
+Starting in Visual Studio 2019 version 16.10, the compiler warns on initialization lists that don't use braces for subobjects. The compiler emits [off-by-default](../preprocessor/compiler-warnings-that-are-off-by-default.md) warning C5246.
+
+Here's an example:
+
+```cpp
+struct S1 {
+  int i, j;
+};
+
+struct S2 {
+   S1 s1;
+   int k;
+};
+
+S2 s2{ 1, 2, 3 }; // warning C5246: 'S2::s1': the initialization of a subobject should be wrapped in braces
+```
+
+To fix this issue, wrap the initialization of the subobject in braces:
+
+```cpp
+S2 s2{ { 1, 2 }, 3 };
+```
+
+### Correctly detect if a `const` object isn't initialized
+
+Starting in Visual Studio 2019 version 16.10, the compiler now emits error C2737 when you attempt to define a `const` object that isn't fully initialized:
+
+```cpp
+struct S {
+   int i;
+   int j = 2;
+};
+
+const S s; // error C2737: 's': const object must be initialized
+```
+
+Earlier versions of the compiler allowed this code to compile, even though `S::i` isn't initialized.
+
+To fix this issue, initialize all members before you create a `const` instance of an object:
+
+```cpp
+struct S {
+   int i = 1;
+   int j = 2;
+};
+```
+
 ## See also
 
-[Microsoft C++ language conformance table](visual-cpp-language-conformance.md)
+[Microsoft C/C++ language conformance](visual-cpp-language-conformance.md)

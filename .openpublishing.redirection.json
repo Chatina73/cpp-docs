@@ -62,8 +62,8 @@
     },
     {
       "source_path": "docs/vcpkg.md",
-      "redirect_url": "/cpp/build/vcpkg",
-      "redirect_document_id": true
+      "redirect_url": "https://vcpkg.io/",
+      "redirect_document_id": false
     },
     {
       "source_path": "docs/windows/universal-windows-apps-cpp.md",
@@ -666,6 +666,11 @@
       "redirect_document_id": false
     },
     {
+      "source_path": "docs/build/setting-the-path-and-environment-variables-for-command-line-builds.md",
+      "redirect_url": "/cpp/build/building-on-the-command-line",
+      "redirect_document_id": false
+    },
+    {
       "source_path": "docs/build/special-characters-in-a-makefile.md",
       "redirect_url": "/cpp/build/reference/special-characters-in-a-makefile",
       "redirect_document_id": false
@@ -726,6 +731,31 @@
       "redirect_document_id": false
     },
     {
+      "source_path": "docs/build/vcpkg.md",
+      "redirect_url": "https://vcpkg.io/",
+      "redirect_document_id": false
+    },
+    {
+      "source_path": "docs/build/install-vcpkg.md",
+      "redirect_url": "https://vcpkg.io/",
+      "redirect_document_id": false
+    },
+    {
+      "source_path": "docs/build/integrate-vcpkg.md",
+      "redirect_url": "https://vcpkg.io/",
+      "redirect_document_id": false
+    },
+    {
+      "source_path": "docs/build/manage-libraries-with-vcpkg.md",
+      "redirect_url": "https://vcpkg.io/",
+      "redirect_document_id": false
+    },
+    {
+      "source_path": "docs/build/vcpkg-command-line-reference.md",
+      "redirect_url": "https://vcpkg.io/",
+      "redirect_document_id": false
+    },
+    {
       "source_path": "docs/build/where-to-define-macros.md",
       "redirect_url": "/cpp/build/reference/where-to-define-macros",
       "redirect_document_id": false
@@ -773,6 +803,11 @@
     {
       "source_path": "docs/build-insights/wpa-views-reference.md",
       "redirect_url": "/cpp/build-insights/reference/wpa-views",
+      "redirect_document_id": false
+    },
+    {
+      "source_path": "docs/c-language/generic_selection.md",
+      "redirect_url": "/cpp/c-language/generic-selection",
       "redirect_document_id": false
     },
     {
